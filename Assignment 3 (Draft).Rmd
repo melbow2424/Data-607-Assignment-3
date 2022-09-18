@@ -1,0 +1,221 @@
+---
+title: "Data 607 Assignment 3"
+author: "Melissa Bowman"
+date: "September 18, 2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+In Assignment 3 for Data 607, 4 problems where given to solve with a focus on regular expressions. The following are the libraries needed to complete the task and the answers to the 4 problems. 
+
+## Load libraries.
+```{r libraries}
+library(RCurl)
+library(dplyr)
+library(stringr)
+library(tidyverse)
+```
+## Import CSV from Raw File of 173 majors listed in fivethirtyeight.com’s College Majors dataset
+
+
+```{r reading csv file from Github}
+df_173_majors = read.csv('https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv')
+```
+
+## Checking Variables
+
+Identifying the majors that contain either "DATA" or "STATISTICS"
+
+```{r head of df}
+df_173_majors = df_173_majors %>%
+  mutate(contains_data = ifelse(Major == 'DATA' |
+                                  Major == 'STATISTICS'|
+                                  Major_Category == 'Biology & Life Science' |
+                                  Major_Category == 'Business' |
+                                  Major_Category == 'Physical Sciences', "yes", "no"))
+
+df_173_majors = df_173_majors %>%
+  mutate(contains_statistics = ifelse(Major_Category == 'Physical Sciences'|
+                                       Major_Category   == 'Engineering' , "yes", "no"))
+```
+
+## Identifying the majors that contain either "DATA" or "STATISTICS" with string matching
+#1. Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset [https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/], provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+```{r}
+df_173_majors$Major %>%
+  str_subset(pattern = "DATA") 
+
+
+df_173_majors$Major %>%
+  str_subset(pattern = "STATISTICS")
+
+```
+## Subsetting Data
+
+#2 Write code that transforms the data below:
+
+```{r}
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+
+string_work <- ' [1] "bell pepper"  "bilberry"     "blackberry"   "blood orange" [5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry" [9] "elderberry"   "lime"         "lychee"       "mulberry"      [13]   "olive"        "salal berry" '
+
+print(string_work)
+
+all_in_string <- str_extract_all(string_work, ".")
+print(all_in_string)
+
+alpha <- str_extract_all(string_work, "[\"]\\w*\\s?\\w*[\"]")
+print(alpha)
+
+alpha_2 <- str_extract_all(string_work, "\\w[a-z]+\\s?[a-z]+\\w")
+print(alpha_2)
+
+class(alpha_2)
+
+x = unlist(alpha_2)
+
+print(alpha_2[[2]])
+
+print(x)
+class (x)
+class(string_work)
+
+cat(string_work)
+cat(str_c(x, collapse = " , "))
+
+strsplit(string_work, split = " ")
+
+cat(alpha)
+
+list_data <- list("Red", "Green", c(21,32,11), TRUE, 51.23, 119.1)
+print(list_data)
+
+cat("is best\n")
+
+#Use the sep argument to control how they’re separated:
+str_c("x", "y", sep = ", ")
+```
+#3 Describe, in words, what these expressions will match:
+
+(.)\1\1
+
+Will match three of any character that are together. Example: 'aaa', ',,,' ,etc. However, in R, it needs to be expressed like this: (.)\\1\\1 while coding or it will not work. Example here is 'yyy'
+
+```{r}
+
+string_1 = 'yyy'
+
+sting_output_1 <- str_extract_all(string_1, "(.)\1\1")
+print(sting_output_1)
+
+sting_output_1_with_backslash <- str_extract_all(string_1, "(.)\\1\\1")
+print(sting_output_1_with_backslash)
+
+
+```
+
+
+"(.)(.)\\2\\1"
+
+Will match any character that has itself and it's reverse order. Example here is 'anna'
+
+```{r}
+
+string_2 = 'anna'
+
+sting_output_2 <- str_extract_all(string_2, "(.)(.)\\2\\1")
+print(sting_output_2)
+
+```
+
+
+(..)\1
+
+Will match with 2 of any character that repeats, however like in the first question, R will produce no match without the extra backslash. Example here is 'bebe'
+
+```{r}
+string_3 = 'bebe'
+
+sting_output_3 <- str_extract_all(string_3, "(..)\1")
+print(sting_output_3)
+
+sting_output_3_with_backslash <- str_extract_all(string_3, "(..)\\1")
+print(sting_output_3_with_backslash)
+```
+
+
+"(.).\\1.\\1"
+
+Will match any character followed by another character and will repeat the first character but what matters most in this pattern is the first character need to be the first middle and last character in the pattern. Example here is 'aba.amatag,'
+
+```{r}
+string_4 = 'aba.amatag,'
+string_4_2 = 'ababababa' # Will match this one as well. 
+
+sting_output_4 <- str_extract_all(string_4, "(.).\\1.\\1")
+print(sting_output_4)
+```
+"(.)(.)(.).*\\3\\2\\1"
+
+Will match 3 characters then at least 0 time another character (*) then in reverse order the 3 characters. Example here is 'asdfdsa'
+
+```{r}
+
+string_5 = 'asdfdsa' 
+
+sting_output_5 <- str_extract_all(string_5, "(.)(.)(.).*\\3\\2\\1")
+print(sting_output_5)
+
+```
+
+
+```{r}
+
+x <- c("apple", "banana", "pear", "appa")
+y= str_extract_all(x, "(.)\\1")
+print(y) 
+
+
+z <- c("apple", "banana", "pear")
+str_view(z, "(..)\\1")
+
+string_1 = 'yyy'
+v <- str_extract_all(string_1, "(.)\1\1")
+print(v)
+
+```
+#4 Construct regular expressions to match words that:
+Start and end with the same character.
+
+```{r}
+
+char_1 = 'puioufghgfh'
+  
+char_output_1 <- str_extract_all(char_1, "(.).+\\1")
+print(char_output_1)
+  
+  
+```
+
+
+Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.)
+
+```{r}
+char_2 <- list("ChurCh", "ertyuierasdfghj")
+
+char_output_2 <- str_extract_all(char_2, "(..).*\\1")
+print(char_output_2)
+ 
+```
+
+
+Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.)
+
+```{r}
+char_3 = 'eltyetyven'
+  
+char_output_3 <- str_extract_all(char_3, "(.).*\\1.*\\1")
+print(char_output_3)
+
